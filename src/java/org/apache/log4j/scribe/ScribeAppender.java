@@ -34,8 +34,13 @@ import java.net.UnknownHostException;
 import java.net.Socket;
 import java.io.IOException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 
 public class ScribeAppender extends AppenderSkeleton {
+
     private List<LogEntry> logEntries;
 
     private String hostname;
@@ -45,6 +50,9 @@ public class ScribeAppender extends AppenderSkeleton {
 
     private Client client;
     private TFramedTransport transport;
+
+    private String dateLogPattern = "yyyy-MM-dd HH:mm:ss,SS";
+    private SimpleDateFormat formatter =  new SimpleDateFormat(dateLogPattern);
 
     public String getScribe_host() {
         return scribe_host;
@@ -129,7 +137,7 @@ public void configureScribe() {
                       stackTrace.append(nextLine);
                     }
                 }
-                String message = String.format("%s %s %s", hostname, layout.format(loggingEvent), stackTrace.toString());
+                String message = String.format("%s %s %s %s", formatter.format(new Date()), hostname, layout.format(loggingEvent), stackTrace.toString());
                 LogEntry entry = new LogEntry(scribe_category, message);
 
                 logEntries.add(entry);
