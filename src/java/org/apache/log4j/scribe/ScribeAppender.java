@@ -17,27 +17,25 @@
  */
 package org.apache.log4j.scribe;
 
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TFramedTransport;
-import org.apache.thrift.transport.TTransportException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransportException;
+
 import scribe.LogEntry;
 import scribe.scribe.Client;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.net.Socket;
-import java.io.IOException;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-
 
 public class ScribeAppender extends AppenderSkeleton {
 
