@@ -123,20 +123,26 @@ public class ScribeAppender extends AppenderSkeleton {
             connect();
 
             try {
-                StringBuffer stackTrace = new StringBuffer();
+                StringBuilder logline = new StringBuilder(255);
+
+                logline.append(formatter.format(new Date()));
+                logline.append(' ');
+                logline.append(hostname);
+                logline.append(' ');
+                logline.append(layout.format(loggingEvent));
+
                 if (loggingEvent.getThrowableInformation() != null) {
                     String[] stackTraceArray = loggingEvent.getThrowableInformation().getThrowableStrRep();
 
-                    String nextLine;
-
                     for (int i = 0; i < stackTraceArray.length; i++) {
-                      nextLine = stackTraceArray[i] + "\n";
-                      stackTrace.append(nextLine);
+                        logline.append('\n');
+                        logline.append(stackTraceArray[i]);
                     }
+                    if (stackTraceArray.length > 0)
+                        logline.append('\n');
                 }
-                String message = String.format("%s %s %s %s", formatter.format(new Date()), hostname, layout.format(loggingEvent), stackTrace.toString());
-                LogEntry entry = new LogEntry(scribe_category, message);
 
+                LogEntry entry = new LogEntry(scribe_category, logline.toString());
                 logEntries.add(entry);
                 client.Log(logEntries);
             } catch (TTransportException e) {
