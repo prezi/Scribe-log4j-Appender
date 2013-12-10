@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.apache.log4j.scribe</groupId>
-  <artifactId>scribelog4j</artifactId>
-  <version>1.2</version>
+  <artifactId>scribe-log4j12</artifactId>
+  <version>1.3</version>
   <packaging>jar</packaging>
 
   <name>scribelog4j</name>
@@ -30,7 +30,6 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.5</version>
     </dependency>
-
   </dependencies>
 
   <build>
