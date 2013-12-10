@@ -4,13 +4,6 @@ Much of this work is based on Alex Loddengaard (http://github.com/alexlod/scribe
 
 I cleaned up his code to work in non-hadoop environments. I added support to reconnect if it loses a connection or if scribe goes away.
 
-You will need the following libraries for your project, which are in lib/ folder for convenience:
-
-./lib/libthrift-r808609.jar
-./lib/log4j-1.2.15.jar
-./lib/slf4j-api-1.5.8.jar
-./lib/slf4j-log4j12-1.5.8.jar
-
 Example to enable in log4j:
 
 # Add scribe to end of rootLogger:
