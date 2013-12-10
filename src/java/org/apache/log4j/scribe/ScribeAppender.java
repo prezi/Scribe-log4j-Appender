@@ -84,8 +84,7 @@ public class ScribeAppender extends AppenderSkeleton {
         this.hostname = hostname;
     }
 
-
-public void configureScribe() {
+    public void configureScribe() {
         try {
             synchronized(this) {
                 if (hostname == null) {
