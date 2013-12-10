@@ -17,8 +17,8 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
 
-import scribe.thrift.LogEntry;
-import scribe.thrift.scribe.Client;
+import scribe.LogEntry;
+import scribe.scribe.Client;
 
 /**
  * Scribe log4j appender

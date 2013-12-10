@@ -1,6 +1,6 @@
 package info.caiiiycuk.scribe;
 
-import scribe.thrift.LogEntry;
+import scribe.LogEntry;
 
 /**
  * Simple provider interface where clients can provide local store forwarding capabilities. This may be needed when

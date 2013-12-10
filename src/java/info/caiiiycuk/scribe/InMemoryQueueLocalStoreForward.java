@@ -1,9 +1,8 @@
 package info.caiiiycuk.scribe;
 
-import scribe.thrift.LogEntry;
+import scribe.LogEntry;
 import java.util.LinkedList;
 import java.util.Queue;
-
 
 public class InMemoryQueueLocalStoreForward implements ILocalStoreForward {
 
