@@ -13,7 +13,7 @@ public class InMemoryQueueLocalStoreForward implements ILocalStoreForward {
     @Override
     public synchronized void putLogEntry(LogEntry logEntry) {
         queue.add(logEntry);
-        if (queue.size() > MAX_SIZE){
+        if (queue.size() > MAX_SIZE) {
             queue.poll();
         }
     }

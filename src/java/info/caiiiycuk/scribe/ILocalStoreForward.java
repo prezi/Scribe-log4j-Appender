@@ -15,13 +15,11 @@ import scribe.LogEntry;
 public interface ILocalStoreForward {
 
     /**
-     *
      * @param logEntry
      */
-    public void putLogEntry (LogEntry logEntry);
+    public void putLogEntry(LogEntry logEntry);
 
     /**
-     *
      * @return
      */
     public LogEntry getLogEntry();
