@@ -17,7 +17,15 @@
  */
 package org.apache.log4j.scribe;
 
-import java.io.IOException;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransportException;
+import scribe.LogEntry;
+import scribe.scribe.Client;
+
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -25,17 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.transport.TFramedTransport;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransportException;
-
-import scribe.LogEntry;
-import scribe.scribe.Client;
 
 public class ScribeAppender extends AppenderSkeleton {
 
@@ -50,7 +47,7 @@ public class ScribeAppender extends AppenderSkeleton {
     private TFramedTransport transport;
 
     private String dateLogPattern = "yyyy-MM-dd HH:mm:ss,SS";
-    private SimpleDateFormat formatter =  new SimpleDateFormat(dateLogPattern);
+    private SimpleDateFormat formatter = new SimpleDateFormat(dateLogPattern);
 
     public String getScribe_host() {
         return scribe_host;
@@ -86,30 +83,26 @@ public class ScribeAppender extends AppenderSkeleton {
 
     public void configureScribe() {
         try {
-            synchronized(this) {
+            synchronized (this) {
                 if (hostname == null) {
                     try {
                         hostname = InetAddress.getLocalHost().getCanonicalHostName();
                     } catch (UnknownHostException e) {
-                        // can't get hostname
                     }
                 }
 
                 // Thrift boilerplate code
-                logEntries = new ArrayList<LogEntry>(1);
+                if (logEntries == null) {
+                    logEntries = new ArrayList(1);
+                }
                 TSocket sock = new TSocket(new Socket(scribe_host, scribe_port));
                 transport = new TFramedTransport(sock);
                 TBinaryProtocol protocol = new TBinaryProtocol(transport, false, false);
                 client = new Client(protocol, protocol);
             }
-        } catch (TTransportException e) {
-            System.err.println(e);
-        } catch (UnknownHostException e) {
-            System.err.println(e);
-        } catch (IOException e) {
-            System.err.println(e);
         } catch (Exception e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
+            //e.printStackTrace();
         }
     }
 
@@ -118,7 +111,7 @@ public class ScribeAppender extends AppenderSkeleton {
     */
     @Override
     public void append(LoggingEvent loggingEvent) {
-        synchronized(this) {
+        synchronized (this) {
 
             connect();
 
@@ -127,7 +120,7 @@ public class ScribeAppender extends AppenderSkeleton {
 
                 logline.append(formatter.format(new Date()));
                 logline.append(' ');
-                logline.append(hostname);
+                logline.append(hostname != null ? hostname : "unknown");
                 logline.append(' ');
                 logline.append(layout.format(loggingEvent));
 
@@ -144,7 +137,8 @@ public class ScribeAppender extends AppenderSkeleton {
 
                 LogEntry entry = new LogEntry(scribe_category, logline.toString());
                 logEntries.add(entry);
-                client.Log(logEntries);
+                if (client != null)
+                    client.Log(logEntries);
             } catch (TTransportException e) {
                 transport.close();
             } catch (Exception e) {
@@ -154,25 +148,24 @@ public class ScribeAppender extends AppenderSkeleton {
             }
         }
     }
+
     /*
     * Connect to scribe if not open, reconnect if failed.
     */
     public void connect() {
-        if (transport != null && transport.isOpen())
-            return;
-
-        if (transport != null && transport.isOpen() == false)
-        {
+        if (transport != null) {
+            if (transport.isOpen())
+                return;
             transport.close();
-
+            client = null;
+            transport = null;
         }
         configureScribe();
     }
 
     public void close() {
-        if (transport != null && transport.isOpen()) {
+        if (transport != null && transport.isOpen())
             transport.close();
-        }
     }
 
     public boolean requiresLayout() {
