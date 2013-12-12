@@ -16,8 +16,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 
 /**
  * Scribe log4j appender
@@ -45,7 +48,7 @@ import java.util.List;
 
 public class ScribeAppender extends AppenderSkeleton {
 
-    private String hostname;//dynamically set
+    private String hostname;        //dynamically set
 
     private String scribeHost;
     private int scribePort;
@@ -55,6 +58,9 @@ public class ScribeAppender extends AppenderSkeleton {
     private boolean addStackTraceToMessage;
     private long timeToWaitBeforeRetry;
     private String localStoreForwardClassName;
+
+    private String dateLogPattern = "yyyy-MM-dd HH:mm:ss,SS";
+    private SimpleDateFormat formatter = new SimpleDateFormat(dateLogPattern);
 
     private int sizeOfInMemoryStoreForward;
 
@@ -84,7 +90,7 @@ public class ScribeAppender extends AppenderSkeleton {
         valid = false;
 
         addStackTraceToMessage = true;
-        timeToWaitBeforeRetry = 5 * 1000;//5 seconds
+        timeToWaitBeforeRetry = 5000;   //5 seconds
         localStoreForwardClassName = null;
 
         localStoreForwardInstance = null;
@@ -238,19 +244,17 @@ public class ScribeAppender extends AppenderSkeleton {
     public void append(LoggingEvent event) {
 
         synchronized (this) {
+            Date now = new Date();
             if (!valid) {
-                long now = System.currentTimeMillis();
-                if ((now - this.connectionFailureTimeStamp) > this.timeToWaitBeforeRetry) {//if 5 sec has passed since last connection failure
+                if ((now.getTime() - this.connectionFailureTimeStamp) > this.timeToWaitBeforeRetry) {//if 5 sec has passed since last connection failure
                     //attempt to connect again
                     connect();
                 }
             }
 
             try {
-
                 if (valid || (this.localStoreForwardInstance != null)) {//only process if the connection is valid or if a local store forward provider exists
-                    String message = String.format("[%s] %s", hostname, layout
-                            .format(event));
+                    String message = String.format("%s [%s] %s", formatter.format(now), hostname, layout.format(event));
 
                     if (event.getThrowableInformation() != null) {
                         if (addStackTraceToMessage) {
