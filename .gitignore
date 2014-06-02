@@ -1,6 +1,7 @@
 *.class
 *.ipr
 *.iws
+.idea/
 out
 build
 *.iml
