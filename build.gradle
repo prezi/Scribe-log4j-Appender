@@ -1,9 +1,6 @@
 description "Scribe log4j appender"
-
+buildscript {
     repositories {
-       mavenLocal()
-        mavenCentral()
-        maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
         maven {
             credentials {
                 username nexusUser
@@ -12,10 +9,15 @@ description "Scribe log4j appender"
             url "https://artifactory.prezi.com/plugins-snapshot"
         }
     }
+    dependencies {
+        classpath "com.prezi.gradle:gradle-prezi-plugin:2.0-SNAPSHOT"
+    }
+}
 
 
 apply plugin: 'idea'
 apply plugin: 'java'
+apply plugin: 'prezi'
 
 
 sourceCompatibility = 1.7
@@ -42,11 +44,36 @@ dependencies {
 task makeDist(type: Tar) {
     compression = Compression.GZIP
     from (configurations.runtime) {
-        into('lib')
+        into('/')
     }
     from(jar.outputs.files) {
         into('/')
     }
 }
 
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
+
+    maven preziDownloadRepo("prezi-reuse")
+    maven preziUploadRepo("prezi-reuse")
+}
+
+artifacts {
+    archives(file(makeDist.archivePath)) {
+        group 'com.prezi.reuse.scribe'
+        name 'scribe-log4j-appender'
+        type 'tgz'
+        builtBy makeDist
+    }
+}
+
+
+uploadArchives {
+    repositories {
+        maven preziUploadRepo("prezi-reuse")
+    }
+}
 
