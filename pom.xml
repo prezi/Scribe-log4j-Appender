@@ -4,7 +4,7 @@
 
   <groupId>org.apache.log4j.scribe</groupId>
   <artifactId>scribe-log4j12</artifactId>
-  <version>1.5</version>
+  <version>1.6</version>
   <packaging>jar</packaging>
 
   <name>scribelog4j</name>
@@ -16,9 +16,9 @@
 
   <dependencies>
     <dependency>
-        <groupId>org.apache.thrift</groupId>
-        <artifactId>libthrift</artifactId>
-        <version>0.9.0</version>
+      <groupId>org.apache.thrift</groupId>
+      <artifactId>libthrift</artifactId>
+      <version>0.9.3</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -29,6 +29,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.5</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
     </dependency>
   </dependencies>
 
@@ -80,12 +85,12 @@
                       <arg value="target/generated-sources"/>
                       <arg value="interface/fb303/if/fb303.thrift"/>
                     </exec>
-                    <delete>
-                      <fileset dir="src/java/scribe/thrift" includes="**/*"/>
+                    <delete failonerror="false">
+                      <fileset dir="src/java/com/facebook/scribe" includes="**/*"/>
                       <fileset dir="src/java/com/facebook/fb303" includes="**/*"/>
                     </delete>
-                    <copy todir="src/java/scribe/thrift">
-                      <fileset dir="target/generated-sources/gen-javabean/scribe"/>
+                    <copy todir="src/java/com/facebook/scribe">
+                      <fileset dir="target/generated-sources/gen-javabean/com/facebook/scribe"/>
                     </copy>
                     <copy todir="src/java/com/facebook/fb303">
                       <fileset dir="target/generated-sources/gen-javabean/com/facebook/fb303"/>

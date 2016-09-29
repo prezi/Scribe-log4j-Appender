@@ -7,3 +7,4 @@ out
 build
 *.iml
 target/
+src/java/com/facebook

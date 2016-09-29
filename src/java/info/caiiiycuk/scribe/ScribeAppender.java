@@ -8,8 +8,8 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
-import scribe.LogEntry;
-import scribe.scribe.Client;
+import com.facebook.scribe.LogEntry;
+import com.facebook.scribe.scribe.Client;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -54,6 +54,7 @@ public class ScribeAppender extends AppenderSkeleton {
     private int scribePort;
     private String scribeCategory;
     private boolean printExceptionStack;
+    private boolean addMessagePrefix;
 
     private boolean addStackTraceToMessage;
     private long timeToWaitBeforeRetry;
@@ -88,6 +89,7 @@ public class ScribeAppender extends AppenderSkeleton {
         scribeCategory = null;
         printExceptionStack = false;
         valid = false;
+        addMessagePrefix = true;
 
         addStackTraceToMessage = true;
         timeToWaitBeforeRetry = 5000;   //5 seconds
@@ -134,6 +136,10 @@ public class ScribeAppender extends AppenderSkeleton {
     public void setScribeCategory(String scribeCategory) {
         this.scribeCategory = scribeCategory;
     }
+
+    public boolean getAddMessagePrefix() { return addMessagePrefix; }
+
+    public void setAddMessagePrefix(boolean addMessagePrefix) { this.addMessagePrefix = addMessagePrefix; }
 
     public void setPrintExceptionStack(boolean printExceptionStack) {
         this.printExceptionStack = printExceptionStack;
@@ -254,7 +260,12 @@ public class ScribeAppender extends AppenderSkeleton {
 
             try {
                 if (valid || (this.localStoreForwardInstance != null)) {//only process if the connection is valid or if a local store forward provider exists
-                    String message = String.format("%s [%s] %s", formatter.format(now), hostname, layout.format(event));
+                    String message;
+                    if (addMessagePrefix) {
+                        message = String.format("%s [%s] %s", formatter.format(now), hostname, layout.format(event));
+                    }  else {
+                        message = formatter.format(now);
+                    }
 
                     if (event.getThrowableInformation() != null) {
                         if (addStackTraceToMessage) {

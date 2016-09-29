@@ -1,6 +1,6 @@
 package info.caiiiycuk.scribe;
 
-import scribe.LogEntry;
+import com.facebook.scribe.LogEntry;
 import java.util.LinkedList;
 import java.util.Queue;
 
