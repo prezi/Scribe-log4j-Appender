@@ -264,7 +264,7 @@ public class ScribeAppender extends AppenderSkeleton {
                     if (addMessagePrefix) {
                         message = String.format("%s [%s] %s", formatter.format(now), hostname, layout.format(event));
                     }  else {
-                        message = formatter.format(now);
+                        message = layout.format(event);
                     }
 
                     if (event.getThrowableInformation() != null) {
